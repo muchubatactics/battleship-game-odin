@@ -1,0 +1,54 @@
+body {
+  font-family: sans-serif;
+}
+
+table {
+  border: 1px solid blue;
+  border-collapse: collapse;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+}
+
+td {
+  border: 1px solid blue;
+  text-align: center;
+  height: 50px;
+  width: 50px;
+}
+
+.btns {
+  margin-top: 50px;
+}
+
+.contents {
+  height: 530px;
+  width: 250px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.boat {
+  border: 2px solid blue;
+  background-color: rgba(0, 0, 255, 0.1);
+  height: 50px;
+}
+
+.five {
+  width: 300px;
+}
+
+.four {
+  width: 200px;
+}
+
+.three {
+  width: 150px;
+}
+
+.two {
+  width: 100px;
+}
