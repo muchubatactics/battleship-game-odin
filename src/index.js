@@ -7,3 +7,13 @@
  * inconsitent? yeah
  * 
 **/
+// import './style.css';
+// const maingameloop = require('./maingameloop.js');
+
+// (() => {
+//   let game = maingameloop();
+// })();
+
+
+
+
