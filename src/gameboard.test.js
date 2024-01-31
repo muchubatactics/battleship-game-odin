@@ -1,3 +1,4 @@
+const { experiments } = require('webpack');
 const Gameboard = require('./gameboard.js');
 
 test('get length and orientation', () => {
@@ -54,4 +55,15 @@ test('all ships sunk test', () => {
   expect(gb.allShipsSunk()).toBe(false);
   gb.receiveAttack(1,4);
   expect(gb.allShipsSunk()).toBe(true);
+});
+
+test('valid Placement', () => {
+  let gb = Gameboard();
+  gb.placeShip({x:1, y:1}, {x:1, y:4});
+  gb.placeShip({x:3, y:0}, {x:5, y:0});
+
+  expect(gb.validPlacement({x:2, y:0}, {x:2, y:3})).toBe(false);
+  expect(gb.validPlacement({x:1, y:2}, {x:3, y:2})).toBe(false);
+  expect(gb.validPlacement({x:3, y:2}, {x:5, y:2})).toBe(true);
+
 });

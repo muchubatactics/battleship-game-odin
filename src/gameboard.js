@@ -36,8 +36,8 @@ function Gameboard() {
       }
     } else {
       for (let i = start.y; i <= end.y; i++) {
-        if (board[i][start.y].ship) throw new Error('ship already exists');
-        board[i][start.y].ship = ship;
+        if (board[i][start.x].ship) throw new Error('ship already exists');
+        board[i][start.x].ship = ship;
       }
     }
   }
@@ -62,9 +62,41 @@ function Gameboard() {
     return true;
   }
 
+  function validPlacement(start, end) {
+    let {horizontal, length} = getLenAndDirection(start, end);
+    if (horizontal) {
+      for (let i = start.x - 1; i <= end.x + 1; i++) {
+        if (i < 0) continue;
+        if (i > 9) continue;
+        if (board[start.y][i].ship) return false;
+
+        if (start.y - 1 >= 0) {
+          if (board[start.y - 1][i].ship) return false;
+        }
+        if (start.y + 1 <= 9) {
+          if (board[start.y + 1][i].ship) return false;
+        }
+      }
+    } else {
+      for (let i = start.y - 1; i <= end.y + 1; i++) {
+        if (i < 0) continue;
+        if (i > 9) continue;
+        if (board[i][start.x].ship) return false;
+
+        if (start.x - 1 >= 0) {
+          if (board[i][start.x - 1].ship) return false;
+        }
+        if (start.x + 1 <= 9) {
+          if (board[i][start.x + 1].ship) return false;
+        }
+      }
+    }
+    return true;
+  }
+
   return {
     getLenAndDirection, placeShip, getBoard, receiveAttack,
-    allShipsSunk,
+    allShipsSunk, validPlacement,
   }
 };
 
