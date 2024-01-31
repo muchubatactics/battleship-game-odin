@@ -1,6 +1,7 @@
 const Player = require('./player.js');
-const computer = require('./computerAI.js');
+const Computer = require('./computerAI.js');
 
+const computer = Computer();
 computer.randomlyPlaceShips();
 computer.printBoard();
 
