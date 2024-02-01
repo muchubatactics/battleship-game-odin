@@ -7,3 +7,28 @@
  * inconsitent? yeah
  * 
 **/
+
+
+let table = document.querySelector('.onex');
+
+let draggables = document.querySelectorAll('.boat');
+
+draggables.forEach((draggable) => {
+  draggable.addEventListener('dragstart', (event) => {
+    draggable.classList.add('dragging');
+
+    draggable.parentElement.classList.add('forward');
+  })
+
+  draggable.addEventListener('dragend', () => {
+    draggable.parentElement.classList.remove('forward');
+    draggable.classList.remove('dragging');
+  })
+})
+
+table.querySelectorAll('td').forEach((td) => {
+  td.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    td.classList.add('hehe');
+  })
+})
