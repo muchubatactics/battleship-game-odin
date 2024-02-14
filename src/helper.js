@@ -10,7 +10,7 @@ const helpers = (function() {
   }
 
   function getEnd(coordinates, orientation, length) {
-    let end;
+    let end = {};
     if (orientation == 'h') {
       end.x = coordinates.x + length;
       end.y = coordinates.y;
@@ -21,7 +21,7 @@ const helpers = (function() {
       }
 
     } else {
-      end.y = coordinates.x + length;
+      end.y = coordinates.y + length;
       end.x = coordinates.x;
 
       while(end.y > 9) {
@@ -37,40 +37,40 @@ const helpers = (function() {
     if (start.x == end.x) {
       for (let i = 0; i < end.y - start.y; i++) {
         let box = document.querySelector(`[data-val='${xyToNum(start.x, start.y + i)}']`);
-        box.style = `
-        border-left = 2px solid green;
-        border-right = 2px solid green;
-        opacity = 1;
+        box.style.cssText = `
+        border-left: 2px solid yellowgreen;
+        border-right: 2px solid yellowgreen;
+        opacity: 1;
         `;
         if (i == 0) {
-          box.style += `
-          border-top: 2px solid green;
+          box.style.cssText += `
+          border-top: 2px solid yellowgreen;
           `;
         }
 
         if (i == end.x - start.x - 1) {
-          box.style += `
-          border-bottom: 2px solid green;
+          box.style.cssText += `
+          border-bottom: 2px solid yellowgreen;
           `;
         }
       }
     } else {
       for (let i = 0; i < end.x - start.x; i++) {
         let box = document.querySelector(`[data-val='${xyToNum(start.x + i, start.y)}']`);
-        box.style = `
-        border-top = 2px solid green;
-        border-bottom = 2px solid green;
-        opacity = 1;
+        box.style.cssText = `
+        border-top: 2px solid yellowgreen;
+        border-bottom: 2px solid yellowgreen;
+        opacity: 1;
         `;
         if (i == 0) {
-          box.style += `
-          border-left: 2px solid green;
+          box.style.cssText += `
+          border-left: 2px solid yellowgreen;
           `;
         }
 
         if (i == end.x - start.x - 1) {
-          box.style += `
-          border-right: 2px solid green;
+          box.style.cssText += `
+          border-right: 2px solid yellowgreen;
           `;
         }
       }
@@ -81,12 +81,12 @@ const helpers = (function() {
     if (start.x == end.x) {
       for (let i = 0; i < end.y - start.y; i++) {
         let box = document.querySelector(`[data-val='${xyToNum(start.x, start.y + i)}']`);
-        box.style = '';
+        box.style.cssText = '';
       }
     } else {
       for (let i = 0; i < end.x - start.x; i++) {
         let box = document.querySelector(`[data-val='${xyToNum(start.x + i, start.y)}']`);
-        box.style = '';
+        box.style.cssText = '';
       }
     }
   }

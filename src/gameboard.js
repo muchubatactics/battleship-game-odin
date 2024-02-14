@@ -20,6 +20,21 @@ function Gameboard() {
     }
   }
 
+  function printBoard() {
+    let ss = '';
+    for (let i = 0; i < 10; i++) {
+      let str = '';
+      for (let j = 0; j < 10; j++) {
+        if (this.getBoard()[i][j].ship) {
+          str += 'X ';
+        } else str += 'O ';
+      }
+      ss += str;
+      ss += '\n';
+    }
+    console.log(ss);
+  }
+
   function getLenAndDirection(start, end) {
     let horizontal = start.x == end.x ? false : true;
     let length = ( horizontal ? end.x - start.x : end.y - start.y ) + 1;
@@ -38,6 +53,19 @@ function Gameboard() {
       for (let i = start.y; i <= end.y; i++) {
         if (board[i][start.x].ship) throw new Error('ship already exists');
         board[i][start.x].ship = ship;
+      }
+    }
+  }
+
+  function removeShip(start, end) {
+    let {horizontal, length} = getLenAndDirection(start, end);
+    if (horizontal) {
+      for (let i = start.x; i <= end.x; i++) {
+        board[start.y][i].ship = null;
+      }
+    } else {
+      for (let i = start.y; i <= end.y; i++) {
+        board[i][start.x].ship = null;
       }
     }
   }
@@ -96,7 +124,7 @@ function Gameboard() {
 
   return {
     getLenAndDirection, placeShip, getBoard, receiveAttack,
-    allShipsSunk, validPlacement,
+    allShipsSunk, validPlacement, removeShip, printBoard,
   }
 };
 
