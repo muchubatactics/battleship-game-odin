@@ -35,7 +35,10 @@ function handleDragStart(event) {
       )
     );
   }
+
+  console.log('drag start');
   gm.printBoard();
+  console.log('end of drag start');
 }
 
 function handleDragEnd(event) {
@@ -54,13 +57,14 @@ function handleDragEnd(event) {
     this.setAttribute('data-placed', '1');
   }
 
-  console.log('print from drag end');
-  gm.printBoard();
-
   gridboxes.forEach((x) => {
     x.classList.remove('over');
     x.style.cssText = '';
-  })
+  });
+
+  console.log('drag end');
+  gm.printBoard();
+  console.log('end of drag  end');
 }
 
 boats.forEach((boat) => {
@@ -112,14 +116,12 @@ gridboxes.forEach((box) => {
   box.addEventListener('drop', (event) => {
     if (!enabledrop) return;
     let boat = document.querySelector('.temp');
-    console.log('in drop');
 
     event.preventDefault();
     event.stopPropagation();
     box.appendChild(boat);
 
     if (boat.getAttribute('data-placed') == '0') {
-      console.log('putting event listener');
       boat.addEventListener('click', (event) => {
         event.stopPropagation();
         let possible = false;
@@ -134,29 +136,32 @@ gridboxes.forEach((box) => {
         if (orientation == 'h') {
           end.y = coordinates.y + length - 1;
           end.x = coordinates.x;
-          if (end.y <= 9) {
-            if (gm.validPlacement(coordinates, end)) possible = true;
-            else {
-              gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
-              return;
-            }
+        
+          if (gm.validPlacement(coordinates, end)) {
+            possible = true;
+          } 
+          else {
+            console.log('here')
+            gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
           }
+        
         } else {
           end.x = coordinates.x + length - 1;
           end.y = coordinates.y;
-          if (end.x <= 9) {
-            if (gm.validPlacement(coordinates, end)) possible = true;
-            else {
-              gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
-              return;
-            }
+          
+          if (gm.validPlacement(coordinates, end)) {
+            possible = true;
+          } 
+          else {
+            console.log('here')
+            gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
           }
+        
         }
   
         if (possible) {
           let h = boat.getAttribute('data-h');
           let w = boat.getAttribute('data-w');
-          console.log('h:', h, w);
           boat.style.height = w + 'px';
           boat.setAttribute('data-h', w);
           boat.style.width = h + 'px';
@@ -168,9 +173,23 @@ gridboxes.forEach((box) => {
             boat.setAttribute('data-orient', 'h');
           }
           gm.placeShip(coordinates, end);
-        } 
+        } else {
+          boat.classList.add('animate');
+          setTimeout(() => {
+            boat.classList.remove('animate');
+          }, 200)
+        }
+
+        console.log('toggle');
+  gm.printBoard();
+  console.log('end of drag toggle');
       });
     }
+
+    console.log('drag drop');
+  gm.printBoard();
+  console.log('end of drag drop');
+
     return false;
   });
 

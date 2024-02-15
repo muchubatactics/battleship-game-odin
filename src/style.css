@@ -114,3 +114,28 @@ td {
 .grid1 > div > .poss {
   border: 2px solid yellowgreen;
 }
+
+@keyframes failed {
+  0% {
+    transform: translateX(0px);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  75% {
+    transform: translateX(5px);
+  }
+
+  100% {
+    transform: translateX(0px);
+  }
+
+}
+
+.boat.animate {
+  border: 2px solid red;
+  background-color: rgba(255, 213, 158, 0.678);
+  animation: failed 0.2s ease-in 0s 1;
+}
