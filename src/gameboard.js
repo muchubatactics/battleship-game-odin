@@ -70,6 +70,15 @@ function Gameboard() {
     }
   }
 
+  function removeAllShips() {
+    for (let i = 0; i < boardHeight; i++) {
+      for (let j = 0; j < boardWidth; j++) {
+        board[i][j].ship = null;
+        board[i][j].isHit = false;
+      }
+    }
+  }
+
   function receiveAttack(x,y) {
     board[y][x].isHit = true;
     if(board[y][x].ship) board[y][x].ship.hit();
@@ -127,6 +136,7 @@ function Gameboard() {
   return {
     getLenAndDirection, placeShip, getBoard, receiveAttack,
     allShipsSunk, validPlacement, removeShip, printBoard,
+    removeAllShips,
   }
 };
 
