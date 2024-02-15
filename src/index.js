@@ -35,36 +35,26 @@ function handleDragStart(event) {
       )
     );
   }
+  gm.printBoard();
 }
 
 function handleDragEnd(event) {
   this.style.opacity = '1';
   this.classList.remove('temp');
+  if (!this.parentElement.classList.contains('spot')) {
+    let num = Number(this.parentElement.getAttribute('data-val'));
+    gm.placeShip(
+      helpers.numToXY(num),
+      helpers.getEnd(
+        helpers.numToXY(num),
+        this.getAttribute('data-orient'),
+        this.getAttribute('data-length')
+      )
+    );
+    this.setAttribute('data-placed', '1');
+  }
 
-  gm.placeShip(
-    helpers.numToXY(
-      this.parentElement.getAttribute('data-val')
-    ),
-    helpers.getEnd(
-      helpers.numToXY(
-        this.parentElement.getAttribute('data-val')
-      ),
-      this.getAttribute('data-orient'),
-      this.getAttribute('data-length')
-    )
-  );
-
-  console.log( 
-  helpers.getEnd(
-    helpers.numToXY(
-      this.parentElement.getAttribute('data-val')
-    ),
-    this.getAttribute('data-orient'),
-    this.getAttribute('data-length')
-  ));
-
-  this.setAttribute('data-placed', '1');
-
+  console.log('print from drag end');
   gm.printBoard();
 
   gridboxes.forEach((x) => {
@@ -120,21 +110,24 @@ gridboxes.forEach((box) => {
   });
 
   box.addEventListener('drop', (event) => {
+    if (!enabledrop) return;
     let boat = document.querySelector('.temp');
+    console.log('in drop');
 
     event.preventDefault();
     event.stopPropagation();
     box.appendChild(boat);
 
     if (boat.getAttribute('data-placed') == '0') {
+      console.log('putting event listener');
       boat.addEventListener('click', (event) => {
         event.stopPropagation();
         let possible = false;
         let orientation = boat.getAttribute('data-orient');
         let length = Number(boat.getAttribute('data-length'));
-        let boxVal = Number(box.getAttribute('data-val'));
+        let boxVal = Number(boat.parentElement.getAttribute('data-val'));
         let coordinates = helpers.numToXY(boxVal);
-  
+
         gm.removeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
   
         let end = {};
@@ -143,17 +136,22 @@ gridboxes.forEach((box) => {
           end.x = coordinates.x;
           if (end.y <= 9) {
             if (gm.validPlacement(coordinates, end)) possible = true;
-            else gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
+            else {
+              gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
+              return;
+            }
           }
         } else {
           end.x = coordinates.x + length - 1;
           end.y = coordinates.y;
           if (end.x <= 9) {
             if (gm.validPlacement(coordinates, end)) possible = true;
-            else gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
+            else {
+              gm.placeShip(coordinates, helpers.getEnd(coordinates, orientation, length));
+              return;
+            }
           }
         }
-        console.log(end, possible);
   
         if (possible) {
           let h = boat.getAttribute('data-h');
@@ -171,12 +169,8 @@ gridboxes.forEach((box) => {
           }
           gm.placeShip(coordinates, end);
         } 
-        console.log(gm.printBoard())
       });
     }
-
-    boat.setAttribute('data-placed', '1');
-
     return false;
   });
 

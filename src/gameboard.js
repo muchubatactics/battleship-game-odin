@@ -91,6 +91,8 @@ function Gameboard() {
   }
 
   function validPlacement(start, end) {
+    if (start.x > 9 || start.y > 9 || end.x > 9 || end.y > 9) return false;
+    if (start.x < 0 || start.y < 0 || end.x < 0 || end.y < 0) return false;
     let {horizontal, length} = getLenAndDirection(start, end);
     if (horizontal) {
       for (let i = start.x - 1; i <= end.x + 1; i++) {
