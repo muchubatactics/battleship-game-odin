@@ -38,7 +38,7 @@ const helpers = (function() {
   function shadeArea(start, end) {
     if (start.x == end.x) {
       for (let i = 0; i < end.y - start.y + 1; i++) {
-        let box = document.querySelector(`[data-val='${xyToNum(start.x, start.y + i)}']`);
+        let box = document.querySelector(`.grid1 [data-val='${xyToNum(start.x, start.y + i)}']`);
         box.style.cssText = `
         border-left: 2px solid yellowgreen;
         border-right: 2px solid yellowgreen;
@@ -58,7 +58,7 @@ const helpers = (function() {
       }
     } else {
       for (let i = 0; i < end.x - start.x + 1; i++) {
-        let box = document.querySelector(`[data-val='${xyToNum(start.x + i, start.y)}']`);
+        let box = document.querySelector(`.grid1 [data-val='${xyToNum(start.x + i, start.y)}']`);
         box.style.cssText = `
         border-top: 2px solid yellowgreen;
         border-bottom: 2px solid yellowgreen;
@@ -82,12 +82,12 @@ const helpers = (function() {
   function unshadeArea(start, end) {
     if (start.x == end.x) {
       for (let i = 0; i < end.y - start.y + 1; i++) {
-        let box = document.querySelector(`[data-val='${xyToNum(start.x, start.y + i)}']`);
+        let box = document.querySelector(`.grid1 [data-val='${xyToNum(start.x, start.y + i)}']`);
         box.style.cssText = '';
       }
     } else {
       for (let i = 0; i < end.x - start.x + 1; i++) {
-        let box = document.querySelector(`[data-val='${xyToNum(start.x + i, start.y)}']`);
+        let box = document.querySelector(`.grid1 [data-val='${xyToNum(start.x + i, start.y)}']`);
         box.style.cssText = '';
       }
     }

@@ -3,34 +3,19 @@ body {
   font-family: sans-serif;
 }
 
-table {
-  border: 1px solid blue;
-  border-collapse: collapse;
-
-}
-
 .container {
   display: flex;
   justify-content: space-around;
 }
 
-td {
-  border: 1px solid blue;
-  text-align: center;
-  height: 25px;
-  width: 25px;
-  padding: 0px;
-  position: relative;
-}
-
-.grid1 > div {
+.grid1 > div, .grid2 > div {
   border-right: 1px solid rgba(0, 0, 255, 0.4);
   border-top: 1px solid rgba(0, 0, 255, 0.4);
   position: relative;
   z-index: 1;
 }
 
-.grid1 {
+.grid1, .grid2 {
   display: grid;
   grid-template-rows: repeat(10, 25px);
   grid-template-columns: repeat(10, 25px);
@@ -79,10 +64,6 @@ td {
   width: 48px;
 }
 
-.dragging {
-  /* background-color: black; */
-}
-
 .spot {
   margin: 10px;
   position: relative;
@@ -91,28 +72,8 @@ td {
   background-color: white;
 }
 
-.forward {
-  z-index: 2342;
-}
-
-.hehe {
-  border: 1px solid green;
-}
-
-.grid1 > .over {
-  border-right: 2px solid green;
-  border-left: 2px solid green;
-  border-bottom: 2px solid green;
-  border-top: 2px solid green;
-  z-index: 2;
-}
-
 .hide {
   opacity: 0;
-}
-
-.grid1 > div > .poss {
-  border: 2px solid yellowgreen;
 }
 
 @keyframes failed {
@@ -138,4 +99,8 @@ td {
   border: 2px solid red;
   background-color: rgba(255, 213, 158, 0.678);
   animation: failed 0.2s ease-in 0s 1;
+}
+
+.disabled {
+  pointer-events: none;
 }

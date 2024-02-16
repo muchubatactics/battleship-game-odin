@@ -15,10 +15,18 @@ const helpers = require('./helper.js');
 // const Computer = require('./computerAI.js');
 const Player = require('./player.js');
 // const Ship = require('./ship.js');
-
 let player = Player();
-
 let boats = document.querySelectorAll('.boat');
+let gridboxes = document.querySelectorAll('.grid1 > div');
+let grid2 = document.querySelector('.grid2');
+grid2.style.opacity = '0.3';
+let enabledrop = false;
+
+const resetButton = document.querySelector('.reset');
+const randomiseButton = document.querySelector('.randomise');
+const playButton = document.querySelector('.play');
+
+disabledGrid2();
 
 function handleDragStart(event) {
   this.style.opacity = '0.2';
@@ -63,68 +71,62 @@ function handleDragEnd(event) {
 
 }
 
+function handleDragEnter(event) {
+  let boat = document.querySelector('.temp');
+  let length = Number(boat.getAttribute('data-length'));
+  let orientation = boat.getAttribute('data-orient');
+  let boxVal = Number(this.getAttribute('data-val'));
+  let coordinates = helpers.numToXY(boxVal);
+
+  let end = helpers.getEnd(coordinates, orientation, length);
+  
+  if (player.getGameboard().validPlacement(coordinates, end)) {
+    helpers.shadeArea(coordinates, end);
+    enabledrop = true;
+  } else {
+    enabledrop = false;
+  }
+}
+
+function handleDragLeave(event) {
+  let boat = document.querySelector('.temp');
+  let length = Number(boat.getAttribute('data-length'));
+  let orientation = boat.getAttribute('data-orient');
+  let boxVal = Number(this.getAttribute('data-val'));
+  let coordinates = helpers.numToXY(boxVal);
+
+  let end = helpers.getEnd(coordinates, orientation, length);
+  helpers.unshadeArea(coordinates, end);
+  
+}
+
+function handleDragOver(event) {
+  if (!enabledrop) return;
+  event.preventDefault();
+  return false;
+}
+
+function handleDrop(event) {
+  if (!enabledrop) return;
+  let boat = document.querySelector('.temp');
+
+  event.preventDefault();
+  event.stopPropagation();
+  this.appendChild(boat);
+
+  if (boat.getAttribute('data-placed') == '0') {
+    boat.addEventListener('click', handleClick);
+  }
+
+  return false;
+}
+
 boats.forEach((boat) => {
   boat.addEventListener('dragstart', handleDragStart);
   boat.addEventListener('dragend', handleDragEnd);
 });
 
 
-let gridboxes = document.querySelectorAll('.grid1 > div');
-let enabledrop = false;
-
-gridboxes.forEach((box) => {
-  box.addEventListener('dragenter', (event) => {
-    let boat = document.querySelector('.temp');
-    let length = Number(boat.getAttribute('data-length'));
-    let orientation = boat.getAttribute('data-orient');
-    let boxVal = Number(box.getAttribute('data-val'));
-    let coordinates = helpers.numToXY(boxVal);
-
-    let end = helpers.getEnd(coordinates, orientation, length);
-    
-    if (player.getGameboard().validPlacement(coordinates, end)) {
-      helpers.shadeArea(coordinates, end);
-      enabledrop = true;
-    } else {
-      enabledrop = false;
-    }
-
-  });
-
-  box.addEventListener('dragleave', (event) => {
-    let boat = document.querySelector('.temp');
-    let length = Number(boat.getAttribute('data-length'));
-    let orientation = boat.getAttribute('data-orient');
-    let boxVal = Number(box.getAttribute('data-val'));
-    let coordinates = helpers.numToXY(boxVal);
-
-    let end = helpers.getEnd(coordinates, orientation, length);
-    helpers.unshadeArea(coordinates, end);
-    
-  });
-
-  box.addEventListener('dragover', (event) => {
-    if (!enabledrop) return;
-    event.preventDefault();
-    return false;
-  });
-
-  box.addEventListener('drop', (event) => {
-    if (!enabledrop) return;
-    let boat = document.querySelector('.temp');
-
-    event.preventDefault();
-    event.stopPropagation();
-    box.appendChild(boat);
-
-    if (boat.getAttribute('data-placed') == '0') {
-      boat.addEventListener('click', handleClick);
-    }
-
-    return false;
-  });
-
-});
 
 function handleClick(event) {
   event.stopPropagation();
@@ -222,7 +224,7 @@ function syncDomGrid() {
           boat.setAttribute('data-orient', 'v');
         }
 
-        document.querySelector(`[data-val="${boxVal}"]`).appendChild(boat);
+        document.querySelector(`.grid1 [data-val="${boxVal}"]`).appendChild(boat);
         boat.setAttribute('data-placed', '1');
         boat.addEventListener('click', handleClick);
       }
@@ -271,14 +273,74 @@ function resetGrid() {
 
 }
 
-let randomiseButton = document.querySelector('.randomise');
+function removeAllEventListeners() {
+  gridboxes.forEach((box) => {
+    box.removeEventListener('dragenter', handleDragEnter);
+    box.removeEventListener('dragleave', handleDragLeave);
+    box.removeEventListener('dragover', handleDragOver);
+    box.removeEventListener('drop', handleDrop);
+  });
+
+  boats.forEach((boat) => {
+    boat.removeEventListener('dragstart', handleDragStart);
+    boat.removeEventListener('dragend', handleDragEnd);
+    boat.removeEventListener('click', handleClick);
+  });  
+}
+
+function disableButtons() {
+  resetButton.setAttribute('disabled', 'true');
+  randomiseButton.setAttribute('disabled', 'true');
+  playButton.setAttribute('disabled', 'true');
+}
+
+function disabledGrid2() {
+  grid2.classList.add('disabled');
+}
+
+function enableGrid2() {
+  grid2.classList.remove('disabled');
+}
+
+
+gridboxes.forEach((box) => {
+  box.addEventListener('dragenter', handleDragEnter);
+
+  box.addEventListener('dragleave', handleDragLeave);
+
+  box.addEventListener('dragover', handleDragOver);
+
+  box.addEventListener('drop', handleDrop);
+
+});
+
 randomiseButton.addEventListener('click', () => {
   resetGrid();
   player.randomlyPlaceShips();
   syncDomGrid();
 });
 
-let resetButton = document.querySelector('.reset');
 resetButton.addEventListener('click', () => {
   resetGrid();
+});
+
+playButton.addEventListener('click', () => {
+  removeAllEventListeners();
+  disableButtons();
+  grid2.style.opacity = '1';
+
+  document.querySelectorAll('.grid2 > div').forEach((box) => {
+    box.addEventListener('click', () => {
+      /**
+       * accept shot, to computer grid
+       * shade computer grid accordingly
+       * all this time disable more clicks for some time
+       * let the computer attack player grid
+       * shade player grid accordingly
+       * 
+       * allow further shots
+       */
+    })
+  });
+  
 });
