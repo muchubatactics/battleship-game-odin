@@ -22,6 +22,8 @@ let grid2 = document.querySelector('.grid2');
 grid2.style.opacity = '0.3';
 let enabledrop = false;
 
+const boatSpots = document.querySelectorAll('.spot');
+
 const resetButton = document.querySelector('.reset');
 const randomiseButton = document.querySelector('.randomise');
 const playButton = document.querySelector('.play');
@@ -68,6 +70,18 @@ function handleDragEnd(event) {
     x.classList.remove('over');
     x.style.cssText = '';
   });
+
+  let test = 0;
+  boatSpots.forEach((spot) => {
+    if (spot.children.length > 0) test++;
+  });
+
+  if (!test) {
+    setTimeout(() => {
+      playButton.removeAttribute('disabled');
+      document.querySelector('.contents').style.display = 'none';
+    }, 500);
+  }
 
 }
 
@@ -266,11 +280,7 @@ function resetGrid() {
     boat.style.height = h + 'px';
     boat.style.width = w + 'px';
     boat.removeEventListener('click', handleClick)
-
   } 
-
-  // reset them to horizontallll
-
 }
 
 function removeAllEventListeners() {
@@ -285,6 +295,7 @@ function removeAllEventListeners() {
     boat.removeEventListener('dragstart', handleDragStart);
     boat.removeEventListener('dragend', handleDragEnd);
     boat.removeEventListener('click', handleClick);
+    boat.removeAttribute('draggable');
   });  
 }
 
@@ -302,6 +313,13 @@ function enableGrid2() {
   grid2.classList.remove('disabled');
 }
 
+function randomise() {
+  resetGrid();
+  player.randomlyPlaceShips();
+  syncDomGrid();
+}
+
+randomise();
 
 gridboxes.forEach((box) => {
   box.addEventListener('dragenter', handleDragEnter);
@@ -314,13 +332,11 @@ gridboxes.forEach((box) => {
 
 });
 
-randomiseButton.addEventListener('click', () => {
-  resetGrid();
-  player.randomlyPlaceShips();
-  syncDomGrid();
-});
+randomiseButton.addEventListener('click', randomise);
 
 resetButton.addEventListener('click', () => {
+  document.querySelector('.contents').style.cssText = '';
+  playButton.setAttribute('disabled', 'true');
   resetGrid();
 });
 
