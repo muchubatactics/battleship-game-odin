@@ -358,16 +358,6 @@ playButton.addEventListener('click', () => {
 });
 
 function attackClick() {
-  /**
-   * accept shot, to computer grid
-   * shade computer grid accordingly
-   * all this time disable more clicks for some time
-   * let the computer attack player grid
-   * shade player grid accordingly
-   * 
-   * allow further shots
-   */
-  
   let boxnum = Number(this.getAttribute('data-val'));
   
   this.removeEventListener('click', attackClick);
@@ -381,9 +371,14 @@ function attackClick() {
     this.appendChild(first);
     this.appendChild(second);
 
+    autoSolve(boxnum, grid2, player, computer);
+
     let shipx = computer.getGameboard().getShipFromNum(boxnum);
     if (shipx.isSunk()) {
       paintSink(computer, shipx, boxnum);
+      if (computer.lossCondition()) {
+        handleLoss(computer);
+      }
     }
   } else {
 
@@ -394,32 +389,11 @@ function attackClick() {
     disableGrid(grid2);
     this.classList.add('wronghit');
     this.appendChild(blackdot);
-    let xy = computer.ai();
+    let xy = computer.ai(player);
     let box = document.querySelector(`.grid1 [data-val='${helpers.xyToNum(xy.x, xy.y)}']`);
 
     setTimeout(() => {
-      if (computer.attack(player, xy)) {
-        const first = document.createElement('div');
-        first.classList.add('st');
-        const second = document.createElement('div');
-        second.classList.add('nd');
-
-        box.classList.add('correcthit');
-        box.appendChild(first);
-        box.appendChild(second);
-
-        let shipx = player.getGameboard().getShipFromNum(helpers.xyToNum(xy.x, xy.y));
-        if (shipx.isSunk()) {
-          paintSink(player, shipx, helpers.xyToNum(xy.x, xy.y));
-        }
-      } else {
-
-        const blackdot = document.createElement('div');
-        blackdot.classList.add('blackdot');
-
-        box.classList.add('wronghit');
-        box.appendChild(blackdot);
-      }
+      continousComputer(xy, box);
       enableGrid(grid2);
       disableGrid(grid1);
     }, 1000);
@@ -437,21 +411,18 @@ function paintSink(player, ship, num) {
   let end;
 
   if (player == computer) {
-    let l = document.querySelector(`.grid2 [data-val='${num - 1}']`);
-    let r = document.querySelector(`.grid2 [data-val='${num + 1}']`);
-    console.log(l, r);
+    let res = beforeAfter(num);
+    let l, r;
+    if (res.before) l = document.querySelector(`.grid2 [data-val='${res.before}']`);
+    if (res.after) r = document.querySelector(`.grid2 [data-val='${res.after}']`);
     let left, right;
     if (l) left = l.childNodes.length > 1;
     if (r) right = r.childNodes.length > 1;
 
     orientation = (left || right) ? 'h' : 'v';
 
-    console.log('orient: ', orientation);
-
-
     start = num;
     let x = num;
-    console.log('start: ',start);
 
     let temp = document.querySelector(`.grid2 [data-val='${x}']`);
     if (orientation == 'h') {
@@ -471,7 +442,6 @@ function paintSink(player, ship, num) {
       start += 10;
       end = start + ((length - 1) * 10)
     }
-    console.log('start: ',start);
 
     let paint = document.createElement('div');
     paint.classList.add('grid2boat');
@@ -497,13 +467,14 @@ function paintSink(player, ship, num) {
       paint.style.width = '23px';
       paint.style.height = `${xx}px`;
     }
-    console.log('start: ',start);
 
     document.querySelector(`.grid2 [data-val='${start}']`).appendChild(paint);
 
   } else {
-    let l = document.querySelector(`.grid1 [data-val='${num - 1}']`);
-    let r = document.querySelector(`.grid1 [data-val='${num + 1}']`);
+    let res = beforeAfter(num);
+    let l, r;
+    if (res.before) l = document.querySelector(`.grid1 [data-val='${res.before}']`);
+    if (res.after) r = document.querySelector(`.grid1 [data-val='${res.after}']`);
     let left, right;
     if (l) left = l.childNodes.length > 1;
     if (r) right = r.childNodes.length > 1;
@@ -519,14 +490,199 @@ function paintSink(player, ship, num) {
         start = x;
         temp = document.querySelector(`.grid1 [data-val='${x}']`);
       }
+      start++;
     } else {
       while(temp && temp.childNodes.length > 1) {
         x = x - 10;
         start = x;
         temp = document.querySelector(`.grid1 [data-val='${x}']`);
       }
+      start += 10;
     }
-    start++;
     document.querySelector(`.grid1 [data-val='${start}']`).childNodes[0].classList.add('ownhit');
   }
+}
+
+function handleLoss(loser) {
+
+  document.querySelectorAll('.grid2 > div').forEach((box) => {
+    box.removeEventListener('click', attackClick);
+  });
+
+  let div = document.createElement('div');
+  div.textContent = (loser == player) ? 'you lose' : 'you win';
+  document.querySelector('body').appendChild(div);
+
+}
+
+function continousComputer(xy, box) {
+  if (computer.attack(player, xy)) {
+    const first = document.createElement('div');
+    first.classList.add('st');
+    const second = document.createElement('div');
+    second.classList.add('nd');
+
+    box.classList.add('correcthit');
+    box.appendChild(first);
+    box.appendChild(second);
+
+    autoSolve(Number(box.getAttribute('data-val')), grid1, computer, player);
+
+    let shipx = player.getGameboard().getShipFromNum(helpers.xyToNum(xy.x, xy.y));
+    if (shipx.isSunk()) {
+      paintSink(player, shipx, helpers.xyToNum(xy.x, xy.y));
+      if (player.lossCondition()) {
+        handleLoss(player);
+        return;
+      }
+    }
+
+    setTimeout(() => {
+      let xy = computer.ai(player);
+      let box = document.querySelector(`.grid1 [data-val='${helpers.xyToNum(xy.x, xy.y)}']`);
+      console.log(box);
+      return continousComputer(xy, box);
+    }, 200);
+  } else {
+
+    const blackdot = document.createElement('div');
+    blackdot.classList.add('blackdot');
+
+    box.classList.add('wronghit');
+    box.appendChild(blackdot);
+  }
+}
+
+function autoSolve(num, grid, attacker, enemy) {
+  let xy = helpers.numToXY(num);
+  let arr = getToBeAutoSolved(xy);
+
+
+  if (enemy.getGameboard().getBoard()[xy.y][xy.x].ship.isSunk()) {
+
+    let l, r, orientation, start, end;
+    let length = enemy.getGameboard().getBoard()[xy.y][xy.x].ship.length;
+    if (enemy == computer) {
+      let res = beforeAfter(num);
+      let l, r;
+      if (res.before) l = document.querySelector(`.grid2 [data-val='${res.before}']`);
+      if (res.after) r = document.querySelector(`.grid2 [data-val='${res.after}']`);
+
+      let left, right;
+      if (l) left = l.childNodes.length > 1;
+      if (r) right = r.childNodes.length > 1;
+
+      orientation = (left || right) ? 'h' : 'v';
+
+      start = num;
+      let x = num;
+
+      let temp = document.querySelector(`.grid2 [data-val='${x}']`);
+      if (orientation == 'h') {
+        while(temp && temp.childNodes.length > 1) {
+          x = x - 1;
+          start = x;
+          temp = document.querySelector(`.grid2 [data-val='${x}']`);
+        }
+        start;
+        end = start + length + 1;
+      } else {
+        while(temp && temp.childNodes.length > 1) {
+          x = x - 10;
+          start = x;
+          temp = document.querySelector(`.grid2 [data-val='${x}']`);
+        }
+        start;
+        end = start + ((length - 1) * 10) + 20;
+      }
+    } else {
+      let res = beforeAfter(num);
+      let l, r;
+      if (res.before) l = document.querySelector(`.grid1 [data-val='${res.before}']`);
+      if (res.after) r = document.querySelector(`.grid1 [data-val='${res.after}']`);
+      let left, right;
+      if (l) left = l.childNodes.length > 1;
+      if (r) right = r.childNodes.length > 1;
+  
+      orientation = (left || right) ? 'h' : 'v';
+  
+      start = num;
+      let x = num;
+  
+      let temp = document.querySelector(`.grid1 [data-val='${x}']`);
+      if (orientation == 'h') {
+        while(temp && temp.childNodes.length > 1) {
+          x = x - 1;
+          start = x;
+          temp = document.querySelector(`.grid1 [data-val='${x}']`);
+        }
+        start;
+        end = start + length + 1;
+      } else {
+        while(temp && temp.childNodes.length > 1) {
+          x = x - 10;
+          start = x;
+          temp = document.querySelector(`.grid1 [data-val='${x}']`);
+        }
+        start;
+        end = start + ((length - 1) * 10) + 20;
+      }
+    }
+
+    if (0 < start && start < 100) {
+      arr.push(start);
+    }
+    if (0 < end  && end < 100) {
+      arr.push(end);
+    }
+
+  }
+
+  arr.forEach((x) => {
+    let y = grid.querySelector(`[data-val='${x}']`);
+    if (y && !y.childNodes.length) {
+      attacker.attack(enemy, helpers.numToXY(x));
+      const blackdot = document.createElement('div');
+      blackdot.classList.add('blackdot');
+      y.appendChild(blackdot);
+      y.classList.add('autosolve');
+
+      y.removeEventListener('click', attackClick);
+    }
+  })
+}
+
+function getToBeAutoSolved(xy) {
+  let arr = [];
+  arr.push({x: xy.x - 1, y: xy.y - 1});
+  arr.push({x: xy.x - 1, y: xy.y + 1});
+  arr.push({x: xy.x + 1, y: xy.y - 1});
+  arr.push({x: xy.x + 1, y: xy.y + 1});
+  arr.forEach((obj) => {
+    if (obj.x > 9 || obj.x < 0) {
+      obj.invalid = true;
+    }
+    if (obj.y > 9 || obj.y < 0) {
+      obj.invalid = true;
+    }
+  });
+  return arr.filter((obj) => {
+    return !obj.invalid;
+  }).map((obj) => {
+    return helpers.xyToNum(obj.x, obj.y);
+  })
+}
+
+function beforeAfter(num) {
+  let xy = helpers.numToXY(num);
+  let before = {x: xy.x - 1, y: xy.y};
+  let after = {x: xy.x + 1, y: xy.y};
+
+  if (!(before.x >= 0 && before.x <= 9)) before = null;
+  if (!(after.x >= 0 && after.x <= 9)) after = null;
+
+  if (before) before = helpers.xyToNum(before.x, before.y);
+  if (after) after = helpers.xyToNum(after.x, after.y);
+
+  return {before, after};
 }

@@ -139,6 +139,13 @@ body {
   align-items: center;
 }
 
+.autosolve {
+  background-color: rgb(243, 243, 243);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .blackdot {
   background-color: black;
   height: 2px;

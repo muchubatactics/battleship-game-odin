@@ -26,7 +26,7 @@ function Computer() {
   let straightAIX = 0;
   let straightAIY = 0;
 
-  function straightAI() {
+  function straightAI(enemy) {
     let x = straightAIX;
     let y = straightAIY;
 
@@ -35,6 +35,17 @@ function Computer() {
       straightAIY++;
     } else straightAIX++;
 
+    if (enemy) {
+      while (enemy.getGameboard().getBoard()[y][x].isHit) {
+        x = straightAIX;
+        y = straightAIY;
+
+        if (straightAIX + 1 > 9) {
+          straightAIX = 0;
+          straightAIY++;
+        } else straightAIX++;
+      }
+    }
 
     return {x,y};
   }
@@ -48,6 +59,7 @@ function Computer() {
   
   comp.attack = function attack(enemy, coordinate) {
     // if (!(coordinate.x && coordinate.y)) coordinate = this.ai();
+
     return enemy.getGameboard().receiveAttack(coordinate.x, coordinate.y);
   }
   
