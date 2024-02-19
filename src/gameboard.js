@@ -1,4 +1,5 @@
 const Ship = require('./ship.js');
+const helpers = require('./helper.js');
 
 function Gameboard() {
   let board = [[], [], [], [], [], [], [], [], [], []];
@@ -81,7 +82,11 @@ function Gameboard() {
 
   function receiveAttack(x,y) {
     board[y][x].isHit = true;
-    if(board[y][x].ship) board[y][x].ship.hit();
+    if(board[y][x].ship) {
+      board[y][x].ship.hit();
+      return true;
+    }
+    return false;
   }
 
   function getBoard() {
@@ -133,10 +138,15 @@ function Gameboard() {
     return true;
   }
 
+  function getShipFromNum(num) {
+    let a = helpers.numToXY(num);
+    return board[a.y][a.x].ship;
+  }
+
   return {
     getLenAndDirection, placeShip, getBoard, receiveAttack,
     allShipsSunk, validPlacement, removeShip, printBoard,
-    removeAllShips,
+    removeAllShips, getShipFromNum,
   }
 };
 

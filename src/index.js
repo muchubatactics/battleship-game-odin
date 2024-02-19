@@ -12,14 +12,16 @@ import './style.css';
 
 const helpers = require('./helper.js');
 // const Gameboard = require('./gameboard.js');
-// const Computer = require('./computerAI.js');
+const Computer = require('./computerAI.js');
 const Player = require('./player.js');
 // const Ship = require('./ship.js');
-let player = Player();
+const computer = Computer();
+const player = Player();
+
 let boats = document.querySelectorAll('.boat');
 let gridboxes = document.querySelectorAll('.grid1 > div');
 let grid2 = document.querySelector('.grid2');
-grid2.style.opacity = '0.3';
+let grid1 = document.querySelector('.grid1');
 let enabledrop = false;
 
 const boatSpots = document.querySelectorAll('.spot');
@@ -28,7 +30,7 @@ const resetButton = document.querySelector('.reset');
 const randomiseButton = document.querySelector('.randomise');
 const playButton = document.querySelector('.play');
 
-disabledGrid2();
+disableGrid(grid2);
 
 function handleDragStart(event) {
   this.style.opacity = '0.2';
@@ -305,12 +307,12 @@ function disableButtons() {
   playButton.setAttribute('disabled', 'true');
 }
 
-function disabledGrid2() {
-  grid2.classList.add('disabled');
+function disableGrid(grid) {
+  grid.classList.add('disabled');
 }
 
-function enableGrid2() {
-  grid2.classList.remove('disabled');
+function enableGrid(grid) {
+  grid.classList.remove('disabled');
 }
 
 function randomise() {
@@ -343,20 +345,121 @@ resetButton.addEventListener('click', () => {
 playButton.addEventListener('click', () => {
   removeAllEventListeners();
   disableButtons();
-  grid2.style.opacity = '1';
+  enableGrid(grid2);
+  grid1.classList.add('nodrag');
+  
+  computer.randomlyPlaceShips();
+  computer.printBoard();
 
   document.querySelectorAll('.grid2 > div').forEach((box) => {
-    box.addEventListener('click', () => {
-      /**
-       * accept shot, to computer grid
-       * shade computer grid accordingly
-       * all this time disable more clicks for some time
-       * let the computer attack player grid
-       * shade player grid accordingly
-       * 
-       * allow further shots
-       */
-    })
+    box.addEventListener('click', attackClick);
   });
   
 });
+
+function attackClick() {
+  /**
+   * accept shot, to computer grid
+   * shade computer grid accordingly
+   * all this time disable more clicks for some time
+   * let the computer attack player grid
+   * shade player grid accordingly
+   * 
+   * allow further shots
+   */
+  
+  console.log('heheheh');
+  let boxnum = this.getAttribute('data-val');
+  
+  this.removeEventListener('click', attackClick);
+  if (player.attack(computer, helpers.numToXY(boxnum))) {
+    const first = document.createElement('div');
+    first.classList.add('st');
+    const second = document.createElement('div');
+    second.classList.add('nd');
+  
+    this.classList.add('correcthit');
+    this.appendChild(first);
+    this.appendChild(second);
+
+    let shipx = computer.getGameboard().getShipFromNum(boxnum);
+    if (shipx.isSunk()) {
+      paintSink(computer, shipx, boxnum);
+    }
+  } else {
+
+    const blackdot = document.createElement('div');
+    blackdot.classList.add('blackdot');
+    
+    disableGrid(grid2);
+    this.classList.add('wronghit');
+    this.appendChild(blackdot);
+    let xy = computer.ai();
+    console.log('here', xy);
+    let box = document.querySelector(`.grid1 [data-val='${helpers.xyToNum(xy.x, xy.y)}']`);
+
+    setTimeout(() => {
+      if (computer.attack(player, xy)) {
+        const first = document.createElement('div');
+        first.classList.add('st');
+        const second = document.createElement('div');
+        second.classList.add('nd');
+
+        box.classList.add('correcthit');
+        box.appendChild(first);
+        box.appendChild(second);
+
+        let shipx = player.getGameboard().getShipFromNum(helpers.xyToNum(xy.x, xy.y));
+        if (shipx.isSunk()) {
+          paintSink(player, shipx, helpers.xyToNum(xy.x, xy.y));
+        }
+      } else {
+
+        const blackdot = document.createElement('div');
+        blackdot.classList.add('blackdot');
+
+        box.classList.add('wronghit');
+        box.appendChild(blackdot);
+      }
+      enableGrid(grid2);
+    }, 1000);
+
+  }
+  console.log('end of click');
+};
+
+function paintSink(player, ship, num) {
+  let length = ship.length;
+  let orientation;
+  let start = {};
+  let end = {};
+
+  if (player == computer) {
+    let left = document.querySelector(`.grid2 [data-val='${num - 1}'`).childNodes.length > 1;
+    let right = document.querySelector(`.grid2 [data-val='${num + 1}'`).childNodes.length > 1;
+
+    orientation = (left || right) ? 'h' : 'v';
+
+  } else {
+    let left = document.querySelector(`.grid1 [data-val='${num - 1}'`).childNodes.length > 1;
+    let right = document.querySelector(`.grid1 [data-val='${num + 1}'`).childNodes.length > 1;
+
+    orientation = (left || right) ? 'h' : 'v';
+    start = num;
+    let x = num;
+
+    if (orientation == 'h') {
+      while(document.querySelector(`.grid1 [data-val='${x - 1}'`).childNodes.length > 1) {
+        x = x - 1;
+        start = x;
+      }
+    } else {
+      while(document.querySelector(`.grid1 [data-val='${x - 1}'`).childNodes.length > 1) {
+        x = x - 10;
+        start = x;
+      }
+    }
+
+    document.querySelector(`.grid1 [data-val='${start}']`).childNodes[0].classList.add('ownhit');
+  }
+}

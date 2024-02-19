@@ -103,4 +103,48 @@ body {
 
 .disabled {
   pointer-events: none;
+  opacity: 0.5;
+}
+
+.nodrag {
+  cursor: pointer;
+  user-select: none;
+  pointer-events: none;
+}
+
+.correcthit .st, .correcthit .nd {
+  background-color: red;
+  width: 35px;
+  height: 1px;
+  position: absolute;
+  z-index: -1;
+}
+
+.correcthit .st {
+  transform-origin: top left;
+  transform: translate(0px) translateY(-1px) rotate(45deg);
+}
+
+
+.correcthit .nd {
+  transform-origin: top right;
+  transform: translate(-11px) translateY(-1px) rotate(-45deg);
+}
+
+.wronghit {
+  background-color: rgb(219, 219, 219);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.blackdot {
+  background-color: black;
+  height: 2px;
+  width: 2px;
+}
+
+.ownhit {
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.459);
 }

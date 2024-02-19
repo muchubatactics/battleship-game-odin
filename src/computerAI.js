@@ -22,16 +22,35 @@ function Computer() {
   
     return {x, y};
   }
+
+  let straightAIX = 0;
+  let straightAIY = 0;
+
+  function straightAI() {
+    console.log('called');
+    let x = straightAIX;
+    let y = straightAIY;
+
+    if (straightAIX + 1 > 9) {
+      straightAIX = 0;
+      straightAIY++;
+    } else straightAIX++;
+
+    console.log('he:', straightAIX)
+
+    return {x,y};
+  }
   
   function smartAI() {
   
   }
   
-  comp.ai = dumbAI;
+  // comp.ai = dumbAI;
+  comp.ai = straightAI;
   
   comp.attack = function attack(enemy, coordinate) {
-    coordinate = this.ai();
-    enemy.getGameboard().receiveAttack(coordinate.x, coordinate.y);
+    // if (!(coordinate.x && coordinate.y)) coordinate = this.ai();
+    return enemy.getGameboard().receiveAttack(coordinate.x, coordinate.y);
   }
   
   
