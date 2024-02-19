@@ -368,8 +368,7 @@ function attackClick() {
    * allow further shots
    */
   
-  console.log('heheheh');
-  let boxnum = this.getAttribute('data-val');
+  let boxnum = Number(this.getAttribute('data-val'));
   
   this.removeEventListener('click', attackClick);
   if (player.attack(computer, helpers.numToXY(boxnum))) {
@@ -391,11 +390,11 @@ function attackClick() {
     const blackdot = document.createElement('div');
     blackdot.classList.add('blackdot');
     
+    enableGrid(grid1);
     disableGrid(grid2);
     this.classList.add('wronghit');
     this.appendChild(blackdot);
     let xy = computer.ai();
-    console.log('here', xy);
     let box = document.querySelector(`.grid1 [data-val='${helpers.xyToNum(xy.x, xy.y)}']`);
 
     setTimeout(() => {
@@ -422,44 +421,112 @@ function attackClick() {
         box.appendChild(blackdot);
       }
       enableGrid(grid2);
+      disableGrid(grid1);
     }, 1000);
 
   }
-  console.log('end of click');
 };
 
 function paintSink(player, ship, num) {
+  num = Number(num);
+  //end does not even matter
+
   let length = ship.length;
   let orientation;
-  let start = {};
-  let end = {};
+  let start;
+  let end;
 
   if (player == computer) {
-    let left = document.querySelector(`.grid2 [data-val='${num - 1}'`).childNodes.length > 1;
-    let right = document.querySelector(`.grid2 [data-val='${num + 1}'`).childNodes.length > 1;
+    let l = document.querySelector(`.grid2 [data-val='${num - 1}']`);
+    let r = document.querySelector(`.grid2 [data-val='${num + 1}']`);
+    console.log(l, r);
+    let left, right;
+    if (l) left = l.childNodes.length > 1;
+    if (r) right = r.childNodes.length > 1;
 
     orientation = (left || right) ? 'h' : 'v';
 
+    console.log('orient: ', orientation);
+
+
+    start = num;
+    let x = num;
+    console.log('start: ',start);
+
+    let temp = document.querySelector(`.grid2 [data-val='${x}']`);
+    if (orientation == 'h') {
+      while(temp && temp.childNodes.length > 1) {
+        x = x - 1;
+        start = x;
+        temp = document.querySelector(`.grid2 [data-val='${x}']`);
+      }
+      start++;
+      end = start + length - 1;
+    } else {
+      while(temp && temp.childNodes.length > 1) {
+        x = x - 10;
+        start = x;
+        temp = document.querySelector(`.grid2 [data-val='${x}']`);
+      }
+      start += 10;
+      end = start + ((length - 1) * 10)
+    }
+    console.log('start: ',start);
+
+    let paint = document.createElement('div');
+    paint.classList.add('grid2boat');
+    let xx;
+    switch (length) {
+      case 2:
+        xx = 48;
+        break;
+      case 3:
+        xx = 73;
+        break;
+      case 4:
+        xx = 98;
+        break;
+      case 5:
+        xx = 123;
+        break;
+    }
+    if (orientation == 'h') {
+      paint.style.height = '23px';
+      paint.style.width = `${xx}px`;
+    } else {
+      paint.style.width = '23px';
+      paint.style.height = `${xx}px`;
+    }
+    console.log('start: ',start);
+
+    document.querySelector(`.grid2 [data-val='${start}']`).appendChild(paint);
+
   } else {
-    let left = document.querySelector(`.grid1 [data-val='${num - 1}'`).childNodes.length > 1;
-    let right = document.querySelector(`.grid1 [data-val='${num + 1}'`).childNodes.length > 1;
+    let l = document.querySelector(`.grid1 [data-val='${num - 1}']`);
+    let r = document.querySelector(`.grid1 [data-val='${num + 1}']`);
+    let left, right;
+    if (l) left = l.childNodes.length > 1;
+    if (r) right = r.childNodes.length > 1;
 
     orientation = (left || right) ? 'h' : 'v';
     start = num;
     let x = num;
+    let temp = document.querySelector(`.grid1 [data-val='${x}']`);
 
     if (orientation == 'h') {
-      while(document.querySelector(`.grid1 [data-val='${x - 1}'`).childNodes.length > 1) {
+      while(temp && temp.childNodes.length > 1) {
         x = x - 1;
         start = x;
+        temp = document.querySelector(`.grid1 [data-val='${x}']`);
       }
     } else {
-      while(document.querySelector(`.grid1 [data-val='${x - 1}'`).childNodes.length > 1) {
+      while(temp && temp.childNodes.length > 1) {
         x = x - 10;
         start = x;
+        temp = document.querySelector(`.grid1 [data-val='${x}']`);
       }
     }
-
+    start++;
     document.querySelector(`.grid1 [data-val='${start}']`).childNodes[0].classList.add('ownhit');
   }
 }

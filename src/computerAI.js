@@ -27,7 +27,6 @@ function Computer() {
   let straightAIY = 0;
 
   function straightAI() {
-    console.log('called');
     let x = straightAIX;
     let y = straightAIY;
 
@@ -36,7 +35,6 @@ function Computer() {
       straightAIY++;
     } else straightAIX++;
 
-    console.log('he:', straightAIX)
 
     return {x,y};
   }
