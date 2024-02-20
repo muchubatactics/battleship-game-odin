@@ -434,6 +434,9 @@ function paintSink(player, ship, num) {
         temp = document.querySelector(`.grid2 [data-val='${x}']`);
       }
       start++;
+
+      while(!checkSameRow(num, start)) start++;
+
       end = start + length - 1;
     } else {
       while(temp && temp.childNodes.length > 1) {
@@ -493,6 +496,9 @@ function paintSink(player, ship, num) {
         temp = document.querySelector(`.grid1 [data-val='${x}']`);
       }
       start++;
+
+      while(!checkSameRow(num, start)) start++;
+      
     } else {
       while(temp && temp.childNodes.length > 1) {
         x = x - 10;
@@ -588,6 +594,10 @@ function autoSolve(num, grid, attacker, enemy) {
         }
         start;
         end = start + length + 1;
+
+        if (!checkSameRow(num, start)) start = null;
+        if (!checkSameRow(num, end)) end = null;
+
       } else {
         while(temp && temp.childNodes.length > 1) {
           x = x - 10;
@@ -620,6 +630,10 @@ function autoSolve(num, grid, attacker, enemy) {
         }
         start;
         end = start + length + 1;
+
+        if (!checkSameRow(num, start)) start = null;
+        if (!checkSameRow(num, end)) end = null;
+
       } else {
         while(temp && temp.childNodes.length > 1) {
           x = x - 10;
@@ -631,10 +645,10 @@ function autoSolve(num, grid, attacker, enemy) {
       }
     }
 
-    if (0 < start && start < 100) {
+    if (start && 0 < start && start < 100) {
       arr.push(start);
     }
-    if (0 < end  && end < 100) {
+    if (end && 0 < end  && end < 100) {
       arr.push(end);
     }
 
@@ -687,4 +701,10 @@ function beforeAfter(num) {
   if (after) after = helpers.xyToNum(after.x, after.y);
 
   return {before, after};
+}
+
+function checkSameRow(num1, num2) {
+  let a = Math.floor(num1 / 10);
+  let b = Math.floor(num2 / 10);
+  return a == b;
 }
