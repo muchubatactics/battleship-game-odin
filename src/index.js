@@ -319,6 +319,8 @@ function randomise() {
   resetGrid();
   player.randomlyPlaceShips();
   syncDomGrid();
+  document.querySelector('.contents').style.display = 'none';
+  playButton.removeAttribute('disabled');
 }
 
 randomise();

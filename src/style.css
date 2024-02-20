@@ -133,7 +133,7 @@ body {
 }
 
 .wronghit {
-  background-color: rgb(219, 219, 219);
+  background-color: rgb(243, 243, 243);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -150,6 +150,11 @@ body {
   background-color: black;
   height: 2px;
   width: 2px;
+}
+
+.autosolve .blackdot {
+  background-color: rgb(170, 170, 170);
+
 }
 
 .ownhit {
