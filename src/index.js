@@ -453,23 +453,23 @@ function paintSink(player, ship, num) {
     let xx;
     switch (length) {
       case 2:
-        xx = 48;
+        xx = 69;
         break;
       case 3:
-        xx = 73;
+        xx = 104;
         break;
       case 4:
-        xx = 98;
+        xx = 139;
         break;
       case 5:
-        xx = 123;
+        xx = 174;
         break;
     }
     if (orientation == 'h') {
-      paint.style.height = '23px';
+      paint.style.height = '33px';
       paint.style.width = `${xx}px`;
     } else {
-      paint.style.width = '23px';
+      paint.style.width = '33px';
       paint.style.height = `${xx}px`;
     }
 
