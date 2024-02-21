@@ -1,4 +1,3 @@
-const { experiments } = require('webpack');
 const Gameboard = require('./gameboard.js');
 
 test('get length and orientation', () => {

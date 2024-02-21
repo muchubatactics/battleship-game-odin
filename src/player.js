@@ -11,7 +11,7 @@ function Player() {
   }
 
   function attack(enemy, coordinate) {
-    enemy.getGameboard().receiveAttack(coordinate.x, coordinate.y);
+    return enemy.getGameboard().receiveAttack(coordinate.x, coordinate.y);
   }
 
   function lossCondition() {
