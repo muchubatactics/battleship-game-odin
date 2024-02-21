@@ -30,6 +30,8 @@ const resetButton = document.querySelector('.reset');
 const randomiseButton = document.querySelector('.randomise');
 const playButton = document.querySelector('.play');
 
+const notifications = document.querySelector('.header .notifications');
+
 disableGrid(grid2);
 
 function handleDragStart(event) {
@@ -357,6 +359,9 @@ playButton.addEventListener('click', () => {
     box.addEventListener('click', attackClick);
   });
   
+  document.querySelectorAll('.showprogress').forEach((div) => {
+    div.style.cssText = '';
+  })
 });
 
 function attackClick() {
@@ -378,6 +383,13 @@ function attackClick() {
     let shipx = computer.getGameboard().getShipFromNum(boxnum);
     if (shipx.isSunk()) {
       paintSink(computer, shipx, boxnum);
+
+      let representation = document.querySelector(`.showprogress.two .rep${shipx.length}[data-sunk='false']`);
+      representation.querySelectorAll('div').forEach((div) => {
+        div.style.backgroundColor = 'red';
+      });
+
+      representation.setAttribute('data-sunk', 'true');
       if (computer.lossCondition()) {
         handleLoss(computer);
       }
@@ -517,10 +529,23 @@ function handleLoss(loser) {
     box.removeEventListener('click', attackClick);
   });
 
-  let div = document.createElement('div');
-  div.textContent = (loser == player) ? 'you lose' : 'you win';
-  document.querySelector('body').appendChild(div);
+  if (loser == player) {
+    notifications.style.backgroundColor = 'red';
+    notifications.textContent = 'You lose.';
+  } else {
+    notifications.style.backgroundColor = 'yellowgreen';
+    notifications.textContent = 'You win!';
+  }
 
+  let rematch = document.createElement('button');
+  rematch.textContent = 'Play again!';
+  rematch.classList.add('rematch');
+  rematch.addEventListener('click', () => {
+    window.location.reload();
+  });
+
+  notifications.appendChild(rematch);
+  
 }
 
 function continousComputer(xy, box) {
@@ -539,6 +564,14 @@ function continousComputer(xy, box) {
     let shipx = player.getGameboard().getShipFromNum(helpers.xyToNum(xy.x, xy.y));
     if (shipx.isSunk()) {
       paintSink(player, shipx, helpers.xyToNum(xy.x, xy.y));
+
+      let representation = document.querySelector(`.showprogress.one .rep${shipx.length}[data-sunk='false']`);
+      representation.querySelectorAll('div').forEach((div) => {
+        div.style.backgroundColor = 'red';
+      });
+
+      representation.setAttribute('data-sunk', 'true');
+
       if (player.lossCondition()) {
         handleLoss(player);
         return;

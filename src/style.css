@@ -308,3 +308,20 @@ button:hover {
   color: green;
   cursor: pointer;
 }
+
+.showsunk {
+  background-color: red;
+}
+
+.rematch {
+  border: 0px;
+  border-bottom: 2px dashed;
+  color: white;
+  font-size: 15px;
+  margin-left: 50px;
+  background-color: transparent;
+}
+
+.rematch:hover {
+  color: black;
+}
