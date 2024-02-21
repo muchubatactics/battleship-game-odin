@@ -361,7 +361,9 @@ playButton.addEventListener('click', () => {
   
   document.querySelectorAll('.showprogress').forEach((div) => {
     div.style.cssText = '';
-  })
+  });
+
+  notifications.textContent = 'Good luck!';
 });
 
 function attackClick() {
