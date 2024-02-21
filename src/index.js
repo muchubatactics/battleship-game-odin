@@ -698,7 +698,7 @@ function autoSolve(num, grid, attacker, enemy) {
 
   arr.forEach((x) => {
     let y = grid.querySelector(`[data-val='${x}']`);
-    if (y && !y.childNodes.length) {
+    if (y && y.childNodes.length == 0) {
       attacker.attack(enemy, helpers.numToXY(x));
       const blackdot = document.createElement('div');
       blackdot.classList.add('blackdot');
