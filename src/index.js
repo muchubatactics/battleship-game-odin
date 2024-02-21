@@ -353,7 +353,7 @@ playButton.addEventListener('click', () => {
   grid1.classList.add('nodrag');
   
   computer.randomlyPlaceShips();
-  computer.printBoard();
+  // computer.printBoard();
 
   document.querySelectorAll('.grid2 > div').forEach((box) => {
     box.addEventListener('click', attackClick);
@@ -406,6 +406,10 @@ function attackClick() {
     this.classList.add('wronghit');
     this.appendChild(blackdot);
     let xy = computer.ai(player);
+    console.log('computer ai returns: ', xy);
+    
+    if (player.getGameboard().getBoard()[xy.y][xy.x].isHit) console.log('IMPOSSIBLE');
+
     let box = document.querySelector(`.grid1 [data-val='${helpers.xyToNum(xy.x, xy.y)}']`);
 
     setTimeout(() => {
@@ -582,10 +586,13 @@ function continousComputer(xy, box) {
 
     setTimeout(() => {
       let xy = computer.ai(player);
+      console.log('computer ai returns: ', xy);
+      
+      if (player.getGameboard().getBoard()[xy.y][xy.x].isHit) console.log('IMPOSSIBLE');
+
       let box = document.querySelector(`.grid1 [data-val='${helpers.xyToNum(xy.x, xy.y)}']`);
-      console.log(box);
       return continousComputer(xy, box);
-    }, 200);
+    }, 500);
   } else {
 
     const blackdot = document.createElement('div');

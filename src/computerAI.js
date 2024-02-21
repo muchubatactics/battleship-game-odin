@@ -71,26 +71,73 @@ function Computer() {
 
         xy = smartHistory.found.next;
         
-        while (!isValid(xy) || enemy.getGameboard().getBoard()[xy.y][xy.x].isHit) {
+        // while (!isValid(xy) || enemy.getGameboard().getBoard()[xy.y][xy.x].isHit) {
+        //   console.log('here in loop');
+        //   if (smartHistory.found.orient == 'h') {
+        //     // if (smartHistory.found.start.x > smartHistory.found.next.x) {
+        //     //   xy = {x: xy.x + 1, y: xy.y};
+        //     //   smartHistory.found.currop = '+';
+        //     // } else {
+        //     //   xy = {x: xy.x - 1, y: xy.y};
+        //     //   smartHistory.found.currop = '-'; 
+        //     // }
 
+        //   }
+        //   else if (smartHistory.found.start.y > smartHistory.found.next.y) {
+        //     xy = {x: xy.x, y: xy.y + 1};
+        //     smartHistory.found.currop = '+';
+        //   } else {
+        //     xy = {x: xy.x, y: xy.y - 1};
+        //     smartHistory.found.currop = '-';
+        //   }
+
+        // }
+        
+        console.log('before new code: xy: ', xy)
+
+        if ((!isValid(xy) || enemy.getGameboard().getBoard()[xy.y][xy.x].isHit) && smartHistory.found.streak) {
+          console.log('In new code');
           if (smartHistory.found.orient == 'h') {
-            if (smartHistory.found.start.x > smartHistory.found.next.x) {
-              xy = {x: xy.x + 1, y: xy.y};
-              smartHistory.found.currop = '+';
+            if (smartHistory.found.currop == '+') {
+              let count = 0;
+              while ((!isValid(xy) || enemy.getGameboard().getBoard()[xy.y][xy.x].isHit) && count < 20 ) {
+                xy = {x: xy.x - 1, y : xy.y};
+                count++;
+              }
+              if (!(count < 20)) console.log('VERY MAJOR ERROR');
+              smartHistory.found.currop = '-';
             } else {
-              xy = {x: xy.x - 1, y: xy.y};
-              smartHistory.found.currop = '-'; 
+              let count = 0;
+              while ((!isValid(xy) || enemy.getGameboard().getBoard()[xy.y][xy.x].isHit) && count < 20 ) {
+                xy = {x: xy.x + 1, y : xy.y};
+                count++;
+              }
+              if (!(count < 20)) console.log('VERY MAJOR ERROR');
+              smartHistory.found.currop = '+';
+            }
+          } else {
+            if (smartHistory.found.currop == '+') {
+              let count = 0;
+              while ((!isValid(xy) || enemy.getGameboard().getBoard()[xy.y][xy.x].isHit) && count < 20 ) {
+                xy = {x: xy.x, y : xy.y - 1};
+                count++;
+              }
+              if (!(count < 20)) console.log('VERY MAJOR ERROR');
+              smartHistory.found.currop = '-';
+            } else {
+              let count = 0;
+              while ((!isValid(xy) || enemy.getGameboard().getBoard()[xy.y][xy.x].isHit) && count < 20 ) {
+                xy = {x: xy.x, y : xy.y + 1};
+                count++;
+              }
+              if (!(count < 20)) console.log('VERY MAJOR ERROR');
+              smartHistory.found.currop = '+';
             }
           }
-          else if (smartHistory.found.start.y > smartHistory.found.next.y) {
-            xy = {x: xy.x, y: xy.y + 1};
-            smartHistory.found.currop = '+';
-          } else {
-            xy = {x: xy.x, y: xy.y - 1};
-            smartHistory.found.currop = '-';
-          }
-
+          console.log('result of new code :', xy);
         }
+
+
 
         if (smartHistory.found.streak) {
           if (smartHistory.found.currop == '+') smartHistory.found.next = (smartHistory.found.orient == 'h') ? {x: xy.x + 1, y: xy.y} : {x: xy.x, y: xy.y + 1};
@@ -154,8 +201,9 @@ function Computer() {
           let {horizontal, length} = comp.getGameboard().getLenAndDirection(smartHistory.found.start, smartHistory.found.next);
           smartHistory.found.orient = (horizontal) ? 'h' : 'v';
 
-          if (horizontal) smartHistory.found.next = {x: xy.x + 1, y: xy.y};
-          else smartHistory.found.next = {x: xy.x, y: xy.y + 1};
+          if (horizontal) smartHistory.found.next = smartHistory.found.currop == '+' ? {x: xy.x + 1, y: xy.y} : {x: xy.x - 1, y: xy.y};
+          else smartHistory.found.next = smartHistory.found.currop == '+' ? {x: xy.x, y: xy.y + 1} : {x: xy.x, y: xy.y - 1};
+
         } else {
           smartHistory.found.next = null;
           if (temp == 't') smartHistory.top = null;
@@ -163,6 +211,7 @@ function Computer() {
           if (temp == 'b') smartHistory.bottom = null;
           if (temp == 'l') smartHistory.left = null;
         }
+        console.log('trying to find first next: ', JSON.stringify(smartHistory));
       }
 
       return xy;
@@ -197,10 +246,13 @@ function Computer() {
         let hist = {xy, top, left, right, bottom};
         hist.found = {};
         hist.found.start = xy;
+        hist.found.next = null;
         smartHistory = hist;
       }
+      console.log('Just found: ', JSON.stringify(smartHistory));
       return xy;
     }
+  
   }
 
   function isValid(obj) {
